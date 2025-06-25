@@ -134,6 +134,38 @@
       </tbody>
     </table>
   </div>
+
+  <div class="table-section">
+  <h2>Analisis Total Perbandingan</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>INSTANSI</th>
+        <th>TOTAL 6 BULAN</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td style="color: #1a4fff;"><strong>DPR</strong></td>
+        <td><strong>4.773.000</strong></td>
+      </tr>
+      <tr>
+        <td style="color: #28b463;"><strong>MPR</strong></td>
+        <td><strong>3.605.000</strong></td>
+      </tr>
+      <tr>
+        <td style="color: #f4b400;"><strong>DPD</strong></td>
+        <td><strong>3.840.000</strong></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="charts">
+  <h2>Visualisasi Total Perbandingan 6 Bulan</h2>
+  <canvas id="totalPieChart"></canvas>
+</div>
+
 </div>
 
 <script>
@@ -172,6 +204,34 @@ new Chart(ctx2, {
     plugins: { legend: { position: 'top' } }
   }
 });
+
+// Pie Chart untuk Total Perbandingan
+const ctx3 = document.getElementById('totalPieChart').getContext('2d');
+new Chart(ctx3, {
+  type: 'pie',
+  data: {
+    labels: ['DPR', 'MPR', 'DPD'],
+    datasets: [{
+      data: [4773000, 3605000, 3840000],
+      backgroundColor: ['#1a4fff', '#28b463', '#f4b400']
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { position: 'bottom' },
+      tooltip: {
+        callbacks: {
+          label: function(context) {
+            let value = context.raw.toLocaleString('id-ID');
+            return `${context.label}: ${value}`;
+          }
+        }
+      }
+    }
+  }
+});
+
 
 // Wordcloud
 // Wordcloud - Berdasarkan hasil analisis data nyata
