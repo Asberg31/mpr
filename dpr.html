@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard Engagement Instansi Pemerintah</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/wordcloud@1.1.0/src/wordcloud2.min.js"></script>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      background-color: #f3f6fc;
+      color: #1e1e1e;
+    }
+    .container {
+      max-width: 1100px;
+      margin: auto;
+      padding: 30px;
+    }
+    h1 { font-size: 28px; margin-bottom: 0; }
+    .cards, .charts, .table-section, .wordcloud-section { margin-top: 30px; }
+    .cards {
+      display: flex;
+      gap: 20px;
+    }
+    .card {
+      flex: 1;
+      padding: 20px;
+      border-radius: 12px;
+      background: white;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    }
+    .card h2 { margin: 0; font-size: 18px; color: #666; }
+    .value { font-size: 28px; font-weight: bold; }
+    .trend { margin-top: 10px; font-size: 14px; }
+    .green { color: green; }
+    .red { color: red; }
+    canvas {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    }
+    table {
+      width: 100%;
+      background: white;
+      border-collapse: collapse;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    }
+    th, td {
+      padding: 14px;
+      text-align: center;
+      border-bottom: 1px solid #eee;
+    }
+    th { background: #f5f8ff; font-weight: 600; }
+    .tab-button {
+      padding: 10px 20px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      font-weight: bold;
+      color: #1a4fff;
+    }
+    .tab-button.active { text-decoration: underline; }
+    #wordcloud {
+      width: 100%;
+      height: 300px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>Dashboard Analisis Engagement Instansi Pemerintah</h1>
+  <p>Perbandingan engagement DPR, MPR, dan DPD dalam 6 bulan terakhir</p>
+
+  <div class="cards">
+    <div class="card">
+      <h2>Total Berita</h2>
+      <div class="value" style="color: #1a4fff;">DPR:   2.957</div>
+      <div class="trend green">&#8593; 12.5% dari bulan lalu</div>
+    </div>
+    <div class="card">
+      <h2>Total Berita</h2>
+      <div class="value" style="color: #28b463;">MPR:   2.027</div>
+      <div class="trend green">&#8593; 5.2% dari bulan lalu</div>
+    </div>
+    <div class="card">
+      <h2>Total Berita</h2>
+      <div class="value" style="color: #f4b400;">DPD: 1.797</div>
+      <div class="trend red">&#8595; 3.8% dari bulan lalu</div>
+    </div>
+  </div>
+
+  <div class="charts">
+    <h2>Tren Engagement 6 Bulan Terakhir</h2>
+    <canvas id="lineChart"></canvas>
+  </div>
+
+  <div class="charts">
+    <h2>Perbandingan Engagement per Bulan</h2>
+    <canvas id="barChart"></canvas>
+  </div>
+
+  <div class="wordcloud-section">
+    <h2>Topik Paling Banyak Dibicarakan</h2>
+    <div>
+      <button class="tab-button active" onclick="switchTab('DPR')">DPR</button>
+      <button class="tab-button" onclick="switchTab('MPR')">MPR</button>
+      <button class="tab-button" onclick="switchTab('DPD')">DPD</button>
+    </div>
+    <div id="wordcloud"></div>
+  </div>
+
+  <div class="table-section">
+    <h2>Analisis Perbandingan</h2>
+    <table>
+      <thead>
+        <tr><th>BULAN</th><th>DPR</th><th>MPR</th><th>DPD</th><th>INSTANSI TERPOPULER</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Desember 2024</td><td>  851.000</td><td>472.500</td><td>497.000</td><td style="color: #1a4fff;">DPR</td></tr>
+        <tr><td>Januari 2025</td><td> 776.500</td><td>523.000</td><td>607.000</td><td style="color: #1a4fff;">DPR</td></tr>
+        <tr><td>Ferbuari 2025</td><td>760.000</td><td>545.500</td><td>  607.000</td><td style="color: #1a4fff;">DPR</td></tr>
+        <tr><td>Maret 2025</td><td>784.000</td><td>573.500</td><td> 664.500</td><td style="color: #1a4fff;">DPR</td></tr>
+        <tr><td>April 2025</td><td> 738.500</td><td>757.000</td><td>659.000</td><td style="color: #1a4fff;">DPR</td></tr>
+        <tr><td>Mei 2025</td><td> 863.000</td><td>734.500</td><td>805.500</td><td style="color: #1a4fff;">DPR</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+// Line Chart
+const ctx1 = document.getElementById('lineChart').getContext('2d');
+new Chart(ctx1, {
+  type: 'line',
+  data: {
+    labels: ['Desember', 'Januari', 'Ferbuari', 'Maret', 'April', 'Mei'],
+    datasets: [
+      { label: 'DPR', data: [851000, 776500, 760000, 784000, 738500, 863000], borderColor: '#1a4fff', fill: true, tension: 0.4 },
+      { label: 'MPR', data: [472500, 523000, 545500, 573500, 757000, 734500], borderColor: '#28b463', fill: true, tension: 0.4 },
+      { label: 'DPD', data: [497000, 607000, 607000, 664500, 659000, 805500], borderColor: '#f4b400', fill: true, tension: 0.4 }
+    ]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { position: 'top' } }
+  }
+});
+
+// Bar Chart
+const ctx2 = document.getElementById('barChart').getContext('2d');
+new Chart(ctx2, {
+  type: 'bar',
+  data: {
+    labels: ['Desember', 'Januari', 'Ferbuari', 'Maret', 'April', 'Mei'],
+    datasets: [
+      { label: 'DPR', data: [851000, 776500, 760000, 784000, 738500, 863000], backgroundColor: '#1a4fff' },
+      { label: 'MPR', data: [472500, 523000, 545500, 573500, 757000, 734500], backgroundColor: '#28b463' },
+      { label: 'DPD', data: [497000, 607000, 607000, 664500, 659000, 805500], backgroundColor: '#f4b400' }
+    ]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { position: 'top' } }
+  }
+});
+
+// Wordcloud
+// Wordcloud - Berdasarkan hasil analisis data nyata
+const wordcloudData = {
+  DPR: [
+    ['dpr', 100], ['ri', 95], ['komisi', 90], ['anggota', 85], ['ketua', 80], ['fraksi', 75],
+    ['kompas', 70], ['tempo', 65], ['antara', 60], ['news', 55], ['detiknews', 50],
+    ['co', 45], ['id', 40], ['ke', 35], ['com', 30]
+  ],
+  MPR: [
+    ['mpr', 100], ['ri', 90], ['ketua', 85], ['wakil', 75], ['pimpinan', 70],
+    ['prabowo', 65], ['waka', 60], ['indonesia', 55], ['antara', 50],
+    ['co', 45], ['id', 40], ['news', 35], ['com', 30], ['dpr', 25], ['detiknews', 20]
+  ],
+  DPD: [
+    ['dpd', 100], ['ri', 95], ['anggota', 85], ['ketua', 80], ['senator', 75],
+    ['kpk', 70], ['lia', 65], ['radar', 60], ['news', 55],
+    ['id', 50], ['co', 45], ['ke', 40], ['jadi', 35], ['gresik', 30], ['com', 25]
+  ]
+};
+
+
+function renderWordcloud(tab) {
+  WordCloud(document.getElementById('wordcloud'), {
+    list: wordcloudData[tab],
+    gridSize: 4,
+    weightFactor: function (size) {
+      return size * 0.7; // teks besar
+    },
+    fontFamily: 'Inter, sans-serif',
+    color: function () {
+      const colors = ['#1a4fff', '#28b463', '#f4b400', '#ff5733', '#8e44ad'];
+      return colors[Math.floor(Math.random() * colors.length)];
+    },
+    rotateRatio: 0.15,
+    rotationSteps: 2,
+    backgroundColor: '#ffffff',
+    shrinkToFit: true,
+    drawOutOfBound: false,
+
+    // Tooltip saat hover saja, tidak perlu klik
+    hover: function(item, dimension, event) {
+      const canvas = document.getElementById('wordcloud');
+      canvas.title = item ? `${item[0]} (${item[1]} kata)` : '';
+    }
+  });
+}
+
+function switchTab(tab) {
+  renderWordcloud(tab);
+  document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+  document.querySelector(`.tab-button[onclick*="${tab}"]`).classList.add('active');
+}
+window.onload = () => renderWordcloud('DPR');
+</script>
+</body>
+</html>
