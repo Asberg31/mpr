@@ -73,6 +73,62 @@
       border-radius: 12px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.06);
     }
+    @media (max-width: 768px) {
+  .cards {
+    flex-direction: column;
+  }
+
+  .card {
+    width: 88%;
+  }
+
+  canvas {
+    width: 100% !important;
+    height: auto !important;
+  }
+
+  table, th, td {
+    font-size: 14px;
+    padding: 10px;
+  }
+
+  .tab-button {
+    font-size: 14px;
+    padding: 8px 12px;
+  }
+
+  h1 {
+    font-size: 22px;
+  }
+
+  h2 {
+    font-size: 18px;
+  }
+
+  .value {
+    font-size: 22px;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 20px 10px;
+  }
+
+  table, th, td {
+    font-size: 12px;
+  }
+
+  .tab-button {
+    display: block;
+    width: 100%;
+    margin-bottom: 5px;
+  }
+}
+.table-section {
+  overflow-x: auto;
+}
+
   </style>
 </head>
 <body>
